@@ -1,9 +1,9 @@
 {
-  "name": "mini-social",
+  "name": "@social/api",
   "version": "0.0.1",
+  "private": true,
   "description": "",
   "author": "",
-  "private": true,
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
@@ -29,6 +29,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/client": "^7.4.1",
     "bcrypt": "^6.0.0",
+    "class-validator": "^0.14.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",
