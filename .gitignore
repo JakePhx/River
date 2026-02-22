@@ -2,6 +2,9 @@
 dist/
 node_modules/
 build/
+apps/**/node_modules
+packages/**/node_modules
+apps/api/prisma/migrations
 
 # Logs
 logs
