@@ -4,6 +4,7 @@ import { UserAuthRepoPort } from '../../application/auth/ports/user-auth-repo.po
 import { UserReadRepoPort } from '../../application/user/ports/user-read-repo.port';
 import { UserRelationsPort } from '../../application/follow/ports/user-relations.port';
 import { UserVisibilityPort } from '../../application/profile/ports/user-visibility.port';
+import { PostUserPort } from 'src/application/post/ports/post-user.port';
 
 @Injectable()
 export class PrismaUserRepo
@@ -11,7 +12,8 @@ export class PrismaUserRepo
     UserAuthRepoPort,
     UserReadRepoPort,
     UserRelationsPort,
-    UserVisibilityPort
+    UserVisibilityPort,
+    PostUserPort
 {
   constructor(private readonly prisma: PrismaService) {}
 
@@ -106,15 +108,24 @@ export class PrismaUserRepo
     return !!row;
   }
 
-  async canViewPrivateContent(viewerId: string | null, targetId: string) {
+  async getPrivacyFacts(viewerId: string | null, targetId: string) {
     const target = await this.prisma.user.findUnique({
       where: { id: targetId },
       select: { isPrivate: true },
     });
-    if (!target) return false;
-    if (!target.isPrivate) return true;
-    if (!viewerId) return false;
-    if (viewerId === targetId) return true;
+    if (!target) return { targetIsPrivate: true, viewerFollowsTarget: false };
+
+    if (!target.isPrivate) {
+      return { targetIsPrivate: false, viewerFollowsTarget: true };
+    }
+
+    if (!viewerId) {
+      return { targetIsPrivate: true, viewerFollowsTarget: false };
+    }
+
+    if (viewerId === targetId) {
+      return { targetIsPrivate: true, viewerFollowsTarget: true };
+    }
 
     const follow = await this.prisma.follow.findUnique({
       where: {
@@ -122,6 +133,15 @@ export class PrismaUserRepo
       },
       select: { followerId: true },
     });
-    return !!follow;
+
+    return { targetIsPrivate: true, viewerFollowsTarget: !!follow };
+  }
+
+  async isActive(userId: string) {
+    const u = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { isActive: true },
+    });
+    return u?.isActive ?? false;
   }
 }

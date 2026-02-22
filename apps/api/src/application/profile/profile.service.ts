@@ -5,6 +5,10 @@ import {
   validateAvatarUrl,
   validateProfileName,
 } from '../../domain/profile/profile.rules';
+import {
+  assertNotBlocked,
+  canViewPrivateAccount,
+} from '../../domain/user/user.rules';
 import type { ProfileRepoPort } from './ports/profile-repo.port';
 import type { UserVisibilityPort } from './ports/user-visibility.port';
 
@@ -18,21 +22,29 @@ export class ProfileService {
   ) {}
 
   async getProfile(viewerId: string | null, targetUserId: string) {
-    if (!(await this.visibility.exists(targetUserId)))
-      throw new NotFoundError('User not found');
+    const exists = await this.visibility.exists(targetUserId);
+    if (!exists) throw new NotFoundError('User not found');
 
-    if (
-      viewerId &&
-      (await this.visibility.isBlockedEitherDirection(viewerId, targetUserId))
-    ) {
-      throw new ForbiddenError('Blocked');
+    // blocked check (only if viewer exists)
+    if (viewerId) {
+      const blocked = await this.visibility.isBlockedEitherDirection(
+        viewerId,
+        targetUserId,
+      );
+      assertNotBlocked(blocked);
     }
 
-    const canView = await this.visibility.canViewPrivateContent(
+    // private visibility rule
+    const facts = await this.visibility.getPrivacyFacts(viewerId, targetUserId);
+    // facts = { targetIsPrivate, viewerFollowsTarget }
+    const ok = canViewPrivateAccount({
+      targetIsPrivate: facts.targetIsPrivate,
       viewerId,
-      targetUserId,
-    );
-    if (!canView) throw new ForbiddenError('Private account');
+      targetId: targetUserId,
+      viewerFollowsTarget: facts.viewerFollowsTarget,
+    });
+
+    if (!ok) throw new ForbiddenError('Private account');
 
     const p = await this.profiles.getByUserId(targetUserId);
     return {

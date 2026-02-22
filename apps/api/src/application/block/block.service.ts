@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TOKENS } from '../tokens';
 import { ConflictError, ValidationError } from '../../domain/common/errors';
 import type { BlockRepoPort } from './ports/block-repo.port';
+import { assertCanBlock } from 'src/domain/follow/follow.rules';
 
 @Injectable()
 export class BlockService {
@@ -10,7 +11,7 @@ export class BlockService {
   ) {}
 
   async block(myId: string, targetId: string) {
-    if (myId === targetId) throw new ValidationError('Cannot block yourself');
+    assertCanBlock({ blockerId: myId, targetId });
     if (await this.blocks.exists(myId, targetId))
       throw new ConflictError('Already blocked');
     await this.blocks.blockTx(myId, targetId);

@@ -21,4 +21,5 @@ export const TOKENS = {
 
   // post
   POST_REPO: Symbol('POST_REPO'),
+  POST_USER: Symbol('POST_USER'),
 } as const;

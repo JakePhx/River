@@ -1,8 +1,11 @@
 export interface UserVisibilityPort {
   exists(userId: string): Promise<boolean>;
   isBlockedEitherDirection(a: string, b: string): Promise<boolean>;
-  canViewPrivateContent(
+  getPrivacyFacts(
     viewerId: string | null,
     targetId: string,
-  ): Promise<boolean>;
+  ): Promise<{
+    targetIsPrivate: boolean;
+    viewerFollowsTarget: boolean;
+  }>;
 }

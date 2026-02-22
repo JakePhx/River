@@ -75,6 +75,7 @@ import { PostController } from './interfaces/http/controllers/post.controller';
     { provide: TOKENS.BLOCK_REPO, useClass: PrismaBlockRepo },
 
     { provide: TOKENS.POST_REPO, useClass: PrismaPostRepo },
+    { provide: TOKENS.POST_USER, useClass: PrismaUserRepo },
 
     { provide: TOKENS.PASSWORD_HASHER, useClass: BcryptHasher },
     { provide: TOKENS.TOKEN_SIGNER, useClass: JwtSigner },

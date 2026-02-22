@@ -10,6 +10,7 @@ import { LoginDto } from './dto/login.dto';
 import type { UserAuthRepoPort } from './ports/user-auth-repo.port';
 import type { PasswordHasherPort } from './ports/password-hasher.port';
 import type { TokenSignerPort } from './ports/token-signer.port';
+import { assertUserIsActive } from 'src/domain/user/user.rules';
 
 @Injectable()
 export class AuthService {
@@ -46,7 +47,7 @@ export class AuthService {
       ? await this.users.findByEmail(dto.usernameOrEmail)
       : await this.users.findByUsername(dto.usernameOrEmail);
     if (!user) throw new UnauthorizedError('Invalid credentials');
-    if (!user.isActive) throw new ForbiddenError('User is inactive');
+    assertUserIsActive(user.isActive);
 
     const ok = await this.hasher.compare(dto.password, user.password);
     if (!ok) throw new UnauthorizedError('Invalid credentials');

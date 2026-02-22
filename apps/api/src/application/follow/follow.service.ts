@@ -1,11 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { TOKENS } from '../tokens';
+import { NotFoundError } from '../../domain/common/errors';
 import {
-  ConflictError,
-  ForbiddenError,
-  NotFoundError,
-  ValidationError,
-} from '../../domain/common/errors';
+  assertCanAcceptRequest,
+  assertCanFollow,
+} from '../../domain/follow/follow.rules';
 import type { FollowRepoPort } from './ports/follow-repo.port';
 import type { FollowRequestRepoPort } from './ports/follow-request-repo.port';
 import type { UserRelationsPort } from './ports/user-relations.port';
@@ -22,19 +21,31 @@ export class FollowService {
   ) {}
 
   async follow(myId: string, targetId: string) {
-    if (myId === targetId) throw new ValidationError('Cannot follow yourself');
-    if (!(await this.users.exists(targetId)))
-      throw new NotFoundError('User not found');
+    const targetExists = await this.users.exists(targetId);
+    if (!targetExists) throw new NotFoundError('User not found');
 
-    if (await this.users.isBlockedEitherDirection(myId, targetId))
-      throw new ForbiddenError('Blocked');
-    if (await this.follows.isFollowing(myId, targetId))
-      throw new ConflictError('Already following');
+    const [
+      blockedEitherDirection,
+      alreadyFollowing,
+      targetIsPrivate,
+      alreadyRequested,
+    ] = await Promise.all([
+      this.users.isBlockedEitherDirection(myId, targetId),
+      this.follows.isFollowing(myId, targetId),
+      this.users.isPrivate(targetId),
+      this.requests.exists(myId, targetId),
+    ]);
 
-    const targetPrivate = await this.users.isPrivate(targetId);
-    if (targetPrivate) {
-      if (await this.requests.exists(myId, targetId))
-        throw new ConflictError('Request already sent');
+    const decision = assertCanFollow({
+      followerId: myId,
+      targetId,
+      blockedEitherDirection,
+      alreadyFollowing,
+      alreadyRequested,
+      targetIsPrivate,
+    });
+
+    if (decision.action === 'CREATE_REQUEST') {
       await this.requests.create(myId, targetId);
       return { status: 'REQUESTED' as const };
     }
@@ -43,13 +54,18 @@ export class FollowService {
       followerId: myId,
       followingId: targetId,
     });
-    // cleanup request if any exists
-    await this.requests.delete(myId, targetId).catch(() => {});
+
+    // cleanup request if it exists (public now)
+    if (alreadyRequested) {
+      await this.requests.delete(myId, targetId).catch(() => {});
+    }
+
     return { status: 'FOLLOWING' as const };
   }
 
   async unfollow(myId: string, targetId: string) {
-    if (!(await this.follows.isFollowing(myId, targetId))) return { ok: true };
+    const following = await this.follows.isFollowing(myId, targetId);
+    if (!following) return { ok: true };
     await this.follows.deleteFollowTx({
       followerId: myId,
       followingId: targetId,
@@ -58,19 +74,23 @@ export class FollowService {
   }
 
   async cancelRequest(myId: string, targetId: string) {
-    if (!(await this.requests.exists(myId, targetId))) return { ok: true };
+    const has = await this.requests.exists(myId, targetId);
+    if (!has) return { ok: true };
     await this.requests.delete(myId, targetId);
     return { ok: true };
   }
 
   async acceptRequest(myId: string, requesterId: string) {
     // requester wants to follow me
-    if (!(await this.requests.exists(requesterId, myId)))
-      throw new NotFoundError('Request not found');
-    if (await this.users.isBlockedEitherDirection(myId, requesterId))
-      throw new ForbiddenError('Blocked');
+    const has = await this.requests.exists(requesterId, myId);
+    if (!has) throw new NotFoundError('Request not found');
 
-    // create follow + counters
+    const blockedEitherDirection = await this.users.isBlockedEitherDirection(
+      myId,
+      requesterId,
+    );
+    assertCanAcceptRequest({ blockedEitherDirection });
+
     await this.follows.createFollowTx({
       followerId: requesterId,
       followingId: myId,

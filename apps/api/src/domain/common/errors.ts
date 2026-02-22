@@ -1,9 +1,4 @@
-export class DomainError extends Error {
-  constructor(message: string) {
-    super(message);
-  }
-}
-
+export class DomainError extends Error {}
 export class NotFoundError extends DomainError {}
 export class ConflictError extends DomainError {}
 export class ForbiddenError extends DomainError {}
