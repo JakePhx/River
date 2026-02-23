@@ -4,6 +4,8 @@
   "packageManager": "pnpm@9.0.0",
   "scripts": {
     "api:dev": "pnpm --filter @social/api start:dev",
+    "api:migrate": "pnpm --filter @social/api prisma migrate dev",
+    "api:seed": "pnpm --filter @social/api prisma db seed",
     "shared:build": "pnpm --filter @social/shared build",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint"
