@@ -1,6 +1,7 @@
 import { IsString, MinLength } from 'class-validator';
+import type { LoginDto } from '@social/shared';
 
-export class LoginDto {
+export class LoginDtoClass implements LoginDto {
   @IsString()
   usernameOrEmail!: string;
 

@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { BlockTargetDtoClass } from '../../../application/block/dto/block-target.dto';
 import { BlockUserUseCase } from 'src/application/block/use-cases/block-user.usecase';
 import { UnblockUserUseCase } from 'src/application/block/use-cases/unblock-user.usecase';
 
@@ -12,16 +13,14 @@ export class BlockController {
   ) {}
 
   @Post()
-  block(@Req() req: any, @Body() body: { targetUserId: string }) {
-    return this.blockUser.execute(req.user.userId, {
-      targetUserId: body.targetUserId,
-    });
+  block(@Req() req: any, @Body() dto: BlockTargetDtoClass) {
+    const input = { targetUserId: dto.targetUserId };
+    return this.blockUser.execute(req.user.userId, input);
   }
 
   @Delete()
-  unblock(@Req() req: any, @Body() body: { targetUserId: string }) {
-    return this.unBlockUser.execute(req.user.userId, {
-      targetUserId: body.targetUserId,
-    });
+  unblock(@Req() req: any, @Body() dto: BlockTargetDtoClass) {
+    const input = { targetUserId: dto.targetUserId };
+    return this.unBlockUser.execute(req.user.userId, input);
   }
 }

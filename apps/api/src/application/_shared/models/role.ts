@@ -1,1 +1,1 @@
-export type Role = 'USER' | 'ADMIN';
+export type { Role } from '@social/shared';

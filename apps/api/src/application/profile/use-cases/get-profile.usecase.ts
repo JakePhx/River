@@ -7,7 +7,7 @@ import {
 } from '../../../domain/user/user.rules';
 import type { ProfileRepoPort } from '../ports/profile-repo.port';
 import type { UserVisibilityPort } from '../ports/user-visibility.port';
-import type { ProfileView } from '../models/profile.models';
+import type { ProfileViewRes } from '@social/shared';
 import type { UserId } from '../../_shared/models/ids';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class GetProfileUseCase {
   async execute(
     viewerId: UserId | null,
     targetUserId: UserId,
-  ): Promise<ProfileView> {
+  ): Promise<ProfileViewRes> {
     if (!(await this.visibility.exists(targetUserId)))
       throw new NotFoundError('User not found');
 
@@ -44,7 +44,7 @@ export class GetProfileUseCase {
     if (!ok) throw new ForbiddenError('Private account');
 
     const p = await this.profiles.getByUserId(targetUserId);
-    const profile: ProfileView = {
+    const profile: ProfileViewRes = {
       userId: targetUserId,
       name: p?.name ?? null,
       avatarUrl: p?.avatarUrl ?? null,

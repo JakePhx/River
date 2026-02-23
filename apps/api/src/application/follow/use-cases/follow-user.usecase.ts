@@ -7,8 +7,8 @@ import type { FollowRequestRepoPort } from '../ports/follow-request-repo.port';
 import type { UserRelationsPort } from '../ports/user-relations.port';
 import type {
   FollowTargetInput,
-  FollowActionResult,
 } from '../models/follow.models';
+import type { FollowActionResultRes } from '@social/shared';
 import type { UserId } from '../../_shared/models/ids';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class FollowUserUseCase {
     private readonly users: UserRelationsPort,
   ) {}
 
-  async execute(followerId: UserId, input: FollowTargetInput): Promise<FollowActionResult> {
+  async execute(followerId: UserId, input: FollowTargetInput): Promise<FollowActionResultRes> {
     const targetId = input.targetUserId;
     if (!(await this.users.exists(targetId)))
       throw new NotFoundError('User not found');

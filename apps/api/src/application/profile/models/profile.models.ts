@@ -1,5 +1,6 @@
 import type { UserId, ProfileId } from '../../_shared/models/ids';
 
+// Backend-only record
 export type ProfileRecord = {
   id: ProfileId;
   userId: UserId;
@@ -9,14 +10,7 @@ export type ProfileRecord = {
   updatedAt: Date;
 };
 
-// what API returns for /profiles/:userId
-export type ProfileView = {
-  userId: UserId;
-  name: string | null;
-  avatarUrl: string | null;
-};
-
-// input for updating profile
+// Application input models
 export type UpdateProfileInput = {
   name?: string | null;
   avatarUrl?: string | null;

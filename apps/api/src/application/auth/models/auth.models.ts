@@ -1,6 +1,7 @@
-import type { Role } from '../../_shared/models/role';
 import type { UserId } from '../../_shared/models/ids';
+import type { Role } from '../../_shared/models/role';
 
+// Backend-only record (has password)
 export type AuthUserRecord = {
   id: UserId;
   email: string;
@@ -10,13 +11,7 @@ export type AuthUserRecord = {
   isActive: boolean;
 };
 
-export type AuthUserPublic = {
-  id: UserId;
-  email: string;
-  username: string;
-  role: Role;
-};
-
+// Application input models (used by use-cases and ports)
 export type RegisterInput = {
   email: string;
   username: string;
@@ -26,9 +21,4 @@ export type RegisterInput = {
 export type LoginInput = {
   usernameOrEmail: string;
   password: string;
-};
-
-export type AuthResponse = {
-  user: AuthUserPublic;
-  accessToken: string;
 };

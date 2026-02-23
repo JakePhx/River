@@ -3,8 +3,12 @@
   "private": true,
   "packageManager": "pnpm@9.0.0",
   "scripts": {
-    "dev": "pnpm --filter @social/api start:dev",
+    "api:dev": "pnpm --filter @social/api start:dev",
+    "shared:build": "pnpm --filter @social/shared build",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
   }
 }

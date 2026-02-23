@@ -1,8 +1,7 @@
-export type UserId = string;
-export type PostId = string;
-export type ProfileId = string;
+// Re-export from shared; internal composite keys stay here
+export type { UserId, PostId, ProfileId } from '@social/shared';
 
-// composite ids are represented as pairs, not strings
-export type FollowKey = { followerId: UserId; followingId: UserId };
-export type FollowRequestKey = { requesterId: UserId; requestedId: UserId };
-export type BlockKey = { blockerId: UserId; blockedId: UserId };
+// composite ids (backend-only, for ports/repos)
+export type BlockKey = { blockerId: string; blockedId: string };
+export type FollowKey = { followerId: string; followingId: string };
+export type FollowRequestKey = { requesterId: string; requestedId: string };

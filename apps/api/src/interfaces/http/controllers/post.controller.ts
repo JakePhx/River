@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
-import { CreatePostDto } from '../../../application/post/dto/create-post.dto';
+import { CreatePostDtoClass } from '../../../application/post/dto/create-post.dto';
 import { CreatePostUseCase } from 'src/application/post/use-cases/create-post.usecase';
 import { GetFeedUseCase } from 'src/application/post/use-cases/get-feed.usecase';
 
@@ -21,8 +21,9 @@ export class PostController {
   ) {}
 
   @HttpPost()
-  create(@Req() req: any, @Body() dto: CreatePostDto) {
-    return this.createPost.execute(req.user.userId, { content: dto.content });
+  create(@Req() req: any, @Body() dto: CreatePostDtoClass) {
+    const input = { content: dto.content };
+    return this.createPost.execute(req.user.userId, input);
   }
 
   @Get('feed')

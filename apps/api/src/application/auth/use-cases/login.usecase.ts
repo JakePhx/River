@@ -5,7 +5,8 @@ import { assertUserIsActive } from '../../../domain/user/user.rules';
 import type { UserAuthRepoPort } from '../ports/user-auth-repo.port';
 import type { PasswordHasherPort } from '../ports/password-hasher.port';
 import type { TokenSignerPort } from '../ports/token-signer.port';
-import type { LoginInput, AuthResponse } from '../models/auth.models';
+import type { LoginInput } from '../models/auth.models';
+import type { AuthRes } from '@social/shared';
 
 @Injectable()
 export class LoginUseCase {
@@ -15,7 +16,7 @@ export class LoginUseCase {
     @Inject(TOKENS.TOKEN_SIGNER) private readonly signer: TokenSignerPort,
   ) {}
 
-  async execute(input: LoginInput): Promise<AuthResponse> {
+  async execute(input: LoginInput): Promise<AuthRes> {
     const isEmail = input.usernameOrEmail.includes('@');
     const user = isEmail
       ? await this.users.findByEmail(input.usernameOrEmail)

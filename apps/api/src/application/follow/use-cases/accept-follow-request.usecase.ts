@@ -5,10 +5,8 @@ import { assertCanAcceptRequest } from '../../../domain/follow/follow.rules';
 import type { FollowRepoPort } from '../ports/follow-repo.port';
 import type { FollowRequestRepoPort } from '../ports/follow-request-repo.port';
 import type { UserRelationsPort } from '../ports/user-relations.port';
-import type {
-  FollowRequestDecisionInput,
-  FollowActionResult,
-} from '../models/follow.models';
+import type { FollowRequestDecisionInput } from '../models/follow.models';
+import type { FollowActionResultRes } from '@social/shared';
 import type { UserId } from '../../_shared/models/ids';
 
 @Injectable()
@@ -22,7 +20,7 @@ export class AcceptFollowRequestUseCase {
     private readonly users: UserRelationsPort,
   ) {}
 
-  async execute(requestedId: UserId, input: FollowRequestDecisionInput): Promise<FollowActionResult> {
+  async execute(requestedId: UserId, input: FollowRequestDecisionInput): Promise<FollowActionResultRes> {
     const { requesterId } = input;
     const has = await this.requests.exists(requesterId, requestedId);
     if (!has) throw new NotFoundError('Request not found');

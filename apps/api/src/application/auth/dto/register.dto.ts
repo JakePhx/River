@@ -1,6 +1,7 @@
 import { IsEmail, IsString, MinLength } from 'class-validator';
+import type { RegisterDto } from '@social/shared';
 
-export class RegisterDto {
+export class RegisterDtoClass implements RegisterDto {
   @IsEmail()
   email!: string;
 

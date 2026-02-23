@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { RegisterDto } from '../../../application/auth/dto/register.dto';
-import { LoginDto } from '../../../application/auth/dto/login.dto';
+import { RegisterDtoClass } from '../../../application/auth/dto/register.dto';
+import { LoginDtoClass } from '../../../application/auth/dto/login.dto';
 import { RegisterUseCase } from 'src/application/auth/use-cases/register.usecase';
 import { LoginUseCase } from 'src/application/auth/use-cases/login.usecase';
 
@@ -12,12 +12,21 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  registerUser(@Body() dto: RegisterDto) {
-    return this.register.execute(dto);
+  registerUser(@Body() dto: RegisterDtoClass) {
+    const input = {
+      email: dto.email,
+      username: dto.username,
+      password: dto.password,
+    };
+    return this.register.execute(input);
   }
 
   @Post('login')
-  loginUser(@Body() dto: LoginDto) {
-    return this.login.execute(dto);
+  loginUser(@Body() dto: LoginDtoClass) {
+    const input = {
+      usernameOrEmail: dto.usernameOrEmail,
+      password: dto.password,
+    };
+    return this.login.execute(input);
   }
 }

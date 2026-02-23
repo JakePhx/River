@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { UpdateProfileDto } from '../../../application/profile/dto/update-profile.dto';
+import { UpdateProfileDtoClass } from '../../../application/profile/dto/update-profile.dto';
 import { GetProfileUseCase } from 'src/application/profile/use-cases/get-profile.usecase';
 import { UpdateProfileUseCase } from 'src/application/profile/use-cases/update-profile.usecase';
 
@@ -29,7 +29,8 @@ export class ProfileController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('me')
-  updateMe(@Req() req: any, @Body() dto: UpdateProfileDto) {
-    return this.updateProfile.execute(req.user.userId, dto);
+  updateMe(@Req() req: any, @Body() dto: UpdateProfileDtoClass) {
+    const input = { name: dto.name, avatarUrl: dto.avatarUrl };
+    return this.updateProfile.execute(req.user.userId, input);
   }
 }

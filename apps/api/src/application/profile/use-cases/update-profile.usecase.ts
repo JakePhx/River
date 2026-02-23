@@ -5,7 +5,8 @@ import {
   validateProfileName,
 } from '../../../domain/profile/profile.rules';
 import type { ProfileRepoPort } from '../ports/profile-repo.port';
-import type { UpdateProfileInput, ProfileView } from '../models/profile.models';
+import type { UpdateProfileInput } from '../models/profile.models';
+import type { ProfileViewRes } from '@social/shared';
 import type { UserId } from '../../_shared/models/ids';
 
 @Injectable()
@@ -17,7 +18,7 @@ export class UpdateProfileUseCase {
   async execute(
     userId: UserId,
     data: UpdateProfileInput,
-  ): Promise<ProfileView> {
+  ): Promise<ProfileViewRes> {
     validateProfileName(data.name);
     validateAvatarUrl(data.avatarUrl);
     return this.profiles.upsertByUserId(userId, data);

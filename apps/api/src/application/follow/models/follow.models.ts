@@ -1,27 +1,14 @@
-import type {
-  UserId,
-  FollowKey,
-  FollowRequestKey,
-} from '../../_shared/models/ids';
+import type { FollowKey, FollowRequestKey } from '../../_shared/models/ids';
 
-// DB-like records (useful for ports/repo implementations)
-export type FollowRecord = FollowKey & {
-  createdAt: Date;
-};
+// Backend-only records
+export type FollowRecord = FollowKey & { createdAt: Date };
+export type FollowRequestRecord = FollowRequestKey & { createdAt: Date };
 
-export type FollowRequestRecord = FollowRequestKey & {
-  createdAt: Date;
-};
-
-// Use-case outputs
-export type FollowActionResult =
-  | { status: 'FOLLOWING' }
-  | { status: 'REQUESTED' };
-
+// Application input models
 export type FollowTargetInput = {
-  targetUserId: UserId;
+  targetUserId: string;
 };
 
 export type FollowRequestDecisionInput = {
-  requesterId: UserId;
+  requesterId: string;
 };

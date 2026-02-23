@@ -47,7 +47,7 @@ export class PrismaPostRepo implements PostRepoPort {
       authorId: p.authorId,
       username: p.author.username,
       content: p.content,
-      createdAt: p.createdAt,
+      createdAt: p.createdAt.toISOString(),
     }));
   }
 }
