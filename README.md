@@ -1,6 +1,6 @@
-# LinkTree
+# LinkData
 
-LinkTree is a lightweight, Twitter-styled social application and supporting libraries. Users can post short messages, follow other users, block users, and view a recommended feed made from follows. The project is implemented with a clean architecture approach on the backend and a React-based frontend (uses `react-router`) on the client side.
+LinkData is a lightweight, Twitter-styled social application and supporting libraries. Users can post short messages, follow other users, block users, and view a recommended feed made from follows. The project is implemented with a clean architecture approach on the backend and a React-based frontend (uses `react-router`) on the client side.
 
 ## Key Features
 - Create, read and list posts
