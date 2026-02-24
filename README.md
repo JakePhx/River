@@ -78,6 +78,3 @@ The backend follows a Clean Architecture (hexagonal-inspired) style:
 - `interfaces` adapts the application layer to HTTP (controllers, guards, filters)
 
 This separation makes business logic testable and independent of framework and persistence concerns.
-
-## License
-This repository does not include a license file. Add a `LICENSE` if you wish to publish under an open-source license.
