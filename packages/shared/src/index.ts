@@ -10,3 +10,5 @@ export * from "./models/pagination.js";
 export * from "./models/post.js";
 export * from "./models/profile.js";
 export * from "./models/user.js";
+
+export * from "./dto/index.js";
