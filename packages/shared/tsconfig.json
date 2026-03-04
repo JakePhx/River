@@ -5,8 +5,8 @@
     "declarationMap": true,
     "emitDeclarationOnly": false,
 
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "target": "ES2022",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

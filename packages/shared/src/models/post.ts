@@ -1,4 +1,4 @@
-import type { PostId, UserId } from './common.js';
+import type { PostId, UserId } from './common';
 
 // DTO (request body - used only at controller layer)
 export type CreatePostDto = {

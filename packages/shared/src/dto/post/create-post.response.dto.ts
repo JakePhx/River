@@ -1,8 +1,8 @@
 import { IsBoolean, IsObject, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
-import { ErrorResponseDTO } from "../error.response.dto.js";
-import { PostResponseDTO } from "./post.response.dto.js";
+import { ErrorResponseDTO } from "../error.response.dto";
+import { PostResponseDTO } from "./post.response.dto";
 
 export class CreatePostResponseDTO {
   @IsBoolean()

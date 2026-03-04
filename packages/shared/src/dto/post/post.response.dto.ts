@@ -1,7 +1,7 @@
 import { IsDate, IsObject, IsString, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
-import { UserResponseDTO } from "../user/user.response.dto.js";
+import { UserResponseDTO } from "../user/user.response.dto";
 
 export class PostResponseDTO {
   @IsString()

@@ -1,14 +1,14 @@
-export * from "./types.js";
-export * from "./validators.js";
-export * from "./constants.js";
+export * from "./types";
+export * from "./validators";
+export * from "./constants";
 
-export * from "./models/auth.js";
-export * from "./models/block.js";
-export * from "./models/common.js";
-export * from "./models/follow.js";
-export * from "./models/pagination.js";
-export * from "./models/post.js";
-export * from "./models/profile.js";
-export * from "./models/user.js";
+export * from "./models/auth";
+export * from "./models/block";
+export * from "./models/common";
+export * from "./models/follow";
+export * from "./models/pagination";
+export * from "./models/post";
+export * from "./models/profile";
+export * from "./models/user";
 
-export * from "./dto/index.js";
+export * from "./dto/index";

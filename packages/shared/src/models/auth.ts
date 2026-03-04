@@ -1,4 +1,4 @@
-import type { Role, UserId } from "./common.js";
+import type { Role, UserId } from "./common";
 
 // DTOs (request body - used only at controller layer)
 export type RegisterDto = {
