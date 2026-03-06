@@ -78,6 +78,8 @@ export class ProfileResponseDTO {
   @IsString()
   avatarUrl!: string;
   @IsString()
+  coverUrl!: string;
+  @IsString()
   contact!: string;
 }
 

@@ -83,13 +83,13 @@ export default function ProfileRoute() {
 
   // Pagination states from Redux
   const userPosts = useAppSelector((s) =>
-    user ? s.users.userPosts[user.id] : undefined
+    user ? s.users.userPosts[user.id] : undefined,
   );
   const followers = useAppSelector((s) =>
-    user ? s.users.followers[user.id] : undefined
+    user ? s.users.followers[user.id] : undefined,
   );
   const following = useAppSelector((s) =>
-    user ? s.users.following[user.id] : undefined
+    user ? s.users.following[user.id] : undefined,
   );
 
   const observerTarget = useRef<HTMLDivElement>(null);
@@ -115,7 +115,7 @@ export default function ProfileRoute() {
             userId,
             reset,
             cursor: reset ? undefined : userPosts?.nextCursor,
-          })
+          }),
         );
       } else if (activeTab === "followers") {
         void dispatch(
@@ -123,7 +123,7 @@ export default function ProfileRoute() {
             userId,
             reset,
             cursor: reset ? undefined : followers?.nextCursor,
-          })
+          }),
         );
       } else if (activeTab === "following") {
         void dispatch(
@@ -131,7 +131,7 @@ export default function ProfileRoute() {
             userId,
             reset,
             cursor: reset ? undefined : following?.nextCursor,
-          })
+          }),
         );
       }
     },
@@ -142,7 +142,7 @@ export default function ProfileRoute() {
       userPosts?.nextCursor,
       followers?.nextCursor,
       following?.nextCursor,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -168,7 +168,7 @@ export default function ProfileRoute() {
           loadTabData();
         }
       },
-      { threshold: 1.0 }
+      { threshold: 1.0 },
     );
 
     if (observerTarget.current) observer.observe(observerTarget.current);
@@ -188,11 +188,18 @@ export default function ProfileRoute() {
   const isBlocked = rel?.blocked ?? false;
   const followStatus = rel?.followStatus ?? "NONE";
 
+  console.log(user.profile);
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Profile Header Card */}
       <Card className="overflow-hidden">
-        <div className="h-32 bg-gradient-to-r from-blue-400 to-indigo-500" />
+        <div className="h-32 bg-gradient-to-r from-blue-400 to-indigo-500">
+          <img
+            src={user.profile?.coverUrl ?? undefined}
+            className="object-cover w-full h-full"
+          />
+        </div>
         <CardHeader className="relative pt-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 -mt-12 mb-4">
             <Avatar className="h-24 w-24 border-4 border-white dark:border-gray-900">
@@ -236,7 +243,7 @@ export default function ProfileRoute() {
                               variant="secondary"
                               onClick={() =>
                                 dispatch(
-                                  unfollowUser({ targetUserId: user.id })
+                                  unfollowUser({ targetUserId: user.id }),
                                 )
                               }
                             >
@@ -249,7 +256,7 @@ export default function ProfileRoute() {
                                 dispatch(
                                   cancelFollowRequest({
                                     targetUserId: user.id,
-                                  })
+                                  }),
                                 )
                               }
                             >
@@ -364,7 +371,7 @@ export default function ProfileRoute() {
               "px-6 py-3 text-sm font-medium border-b-2 transition-colors",
               activeTab === t
                 ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -428,7 +435,7 @@ export default function ProfileRoute() {
                       </Button>
                     </Link>
                   </div>
-                )
+                ),
               )}
               {(activeTab === "followers" ? followers : following)?.status ===
                 "loading" && <div className="p-4 text-center">Loading…</div>}

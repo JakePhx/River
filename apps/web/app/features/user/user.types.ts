@@ -31,6 +31,7 @@ export type User = {
     birthDate?: Date;
     location?: string;
     avatarUrl?: string;
+    coverUrl?: string;
     contact?: string;
   };
 };

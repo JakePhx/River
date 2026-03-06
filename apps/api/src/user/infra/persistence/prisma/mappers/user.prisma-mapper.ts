@@ -29,6 +29,7 @@ export type PrismaUser = {
     location?: string;
     contact?: string;
     avatarUrl?: string;
+    coverUrl?: string;
   };
 };
 
@@ -48,6 +49,7 @@ export class UserPrismaMapper {
           location: raw.profile.location,
           contact: raw.profile.contact,
           avatarUrl: raw.profile.avatarUrl,
+          coverUrl: raw.profile.coverUrl,
         })
       : ProfileEntity.empty();
 
@@ -97,6 +99,7 @@ export class UserPrismaMapper {
         location: entity.profile.location,
         contact: entity.profile.contact,
         avatarUrl: entity.profile.avatarUrl,
+        coverUrl: entity.profile.coverUrl,
       },
     };
   }

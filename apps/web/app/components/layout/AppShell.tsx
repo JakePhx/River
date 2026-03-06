@@ -42,8 +42,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const showSkeleton = !!token && !me;
 
   return (
-    <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur">
+    <div className="min-h-dvh bg-background relative flex flex-col">
+      <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur z-100">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2 font-semibold">
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
@@ -65,7 +65,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   to="/feed"
                   className={cn(
                     "inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-accent",
-                    location.pathname.startsWith("/feed") && "bg-accent"
+                    location.pathname.startsWith("/feed") && "bg-accent",
                   )}
                 >
                   <Home />
@@ -74,7 +74,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   to="/network"
                   className={cn(
                     "inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-accent",
-                    location.pathname.startsWith("/network") && "bg-accent"
+                    location.pathname.startsWith("/network") && "bg-accent",
                   )}
                 >
                   <Users />
@@ -83,7 +83,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   to={`/u/${me.username}`}
                   className={cn(
                     "inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-accent",
-                    location.pathname.startsWith("/u/") && "bg-accent"
+                    location.pathname.startsWith("/u/") && "bg-accent",
                   )}
                 >
                   <Avatar className="h-7 w-7">
@@ -127,7 +127,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl px-4 py-6">
+      <main className="mx-auto w-full max-w-5xl px-4 py-6 flex-1">
         {showSkeleton ? (
           <div className="flex items-center justify-center py-24">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />

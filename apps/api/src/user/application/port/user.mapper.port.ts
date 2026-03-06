@@ -35,6 +35,7 @@ export class UserEntityDTOMapperPort {
         birthDate: user.profile.birthDate ?? new Date(),
         location: user.profile.location ?? '',
         avatarUrl: user.profile.avatarUrl ?? '',
+        coverUrl: user.profile.coverUrl ?? '',
         contact: user.profile.contact ?? '',
       },
     };

@@ -28,6 +28,7 @@ export class UserMapper {
         company: user.profile?.company,
         bio: user.profile?.bio,
         gender: user.profile?.gender,
+        coverUrl: user.profile?.coverUrl,
         website: user.profile?.website,
         birthDate: user.profile?.birthDate
           ? new Date(user.profile.birthDate)

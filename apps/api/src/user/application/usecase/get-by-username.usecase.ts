@@ -19,6 +19,8 @@ export class GetByUserNameUseCase {
   async execute(username: Username): Promise<UserResponseDTO> {
     const me = await this.users.findByUsername(username);
     if (!me) throw new UserNotFoundError();
-    return UserEntityDTOMapperPort.toDTO(me);
+    const user = UserEntityDTOMapperPort.toDTO(me);
+    console.log('user', user);
+    return user;
   }
 }

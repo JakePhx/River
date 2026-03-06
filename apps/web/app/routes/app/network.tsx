@@ -18,7 +18,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 export default function NetworkRoute() {
   const dispatch = useAppDispatch();
   const { items, status, query, hasMore, nextCursor } = useAppSelector(
-    (s) => s.users
+    (s) => s.users,
   );
   const [searchTerm, setSearchTerm] = useState(query);
   const observerTarget = useRef<HTMLDivElement>(null);
@@ -73,7 +73,7 @@ export default function NetworkRoute() {
           loadMore();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     observer.observe(el);
@@ -105,35 +105,44 @@ export default function NetworkRoute() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((user) => (
-          <Card key={user.id} className="overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <Link to={`/u/${user.username}`}>
-                  <Avatar className="h-12 w-12 transition-opacity hover:opacity-80">
-                    <AvatarImage src={user.profile?.avatarUrl ?? undefined} />
-                    <AvatarFallback>
-                      {user.username?.[0]?.toUpperCase() ?? "?"}
-                    </AvatarFallback>
-                  </Avatar>
-                </Link>
-                <div className="flex-1 overflow-hidden">
-                  <Link
-                    to={`/u/${user.username}`}
-                    className="block truncate font-semibold hover:underline"
-                  >
-                    {user.name || user.username}
+          <Card key={user.id} className="overflow-hidden relative">
+            <article
+              aria-label={`Profile card for ${user.name || user.username}`}
+            >
+              <img
+                src={user.profile?.coverUrl ?? undefined}
+                alt={`Cover for ${user.name || user.username}`}
+                className="object-cover w-full h-20 absolute top-0 left-0 right-0 z-0"
+              />
+              <CardContent className="relative z-10 p-6 pt-20">
+                <div className="flex items-center gap-3">
+                  <Link to={`/u/${user.username}`}>
+                    <Avatar className="h-12 w-12 transition-opacity hover:opacity-80 ring-2 ring-card">
+                      <AvatarImage src={user.profile?.avatarUrl ?? undefined} />
+                      <AvatarFallback>
+                        {user.username?.[0]?.toUpperCase() ?? "?"}
+                      </AvatarFallback>
+                    </Avatar>
                   </Link>
-                  <p className="truncate text-sm text-muted-foreground">
-                    @{user.username}
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      to={`/u/${user.username}`}
+                      className="block truncate font-semibold hover:underline"
+                    >
+                      {user.name || user.username}
+                    </Link>
+                    <p className="truncate text-sm text-muted-foreground">
+                      @{user.username}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="mt-4 flex gap-4 text-xs text-muted-foreground">
-                <span>{user.followersCount} followers</span>
-                <span>{user.followingCount} following</span>
-                <span>{user.postCount} posts</span>
-              </div>
-            </CardContent>
+                <div className="mt-4 flex flex-wrap gap-4 text-xs text-muted-foreground">
+                  <span>{user.followersCount} followers</span>
+                  <span>{user.followingCount} following</span>
+                  <span>{user.postCount} posts</span>
+                </div>
+              </CardContent>
+            </article>
           </Card>
         ))}
       </div>
