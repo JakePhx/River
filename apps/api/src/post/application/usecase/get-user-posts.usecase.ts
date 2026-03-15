@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TOKENS } from '@/_shared/application/tokens';
 
 // Ports
-import type { PostRepoPort } from '../ports/post.repo.port';
-import { PostEntityDTOMapperPort } from '../ports/post.mapper.port';
+import type { PostRepoPort } from '../port/post.repo.port';
+import { PostEntityDTOMapperPort } from '../port/post.mapper.port';
 
 // Entities, Value Objects, && DTOs
 import { UserId } from '@/user/domain/value-object/user-id.vo';

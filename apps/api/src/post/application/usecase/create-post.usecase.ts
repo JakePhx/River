@@ -2,13 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TOKENS } from '@/_shared/application/tokens';
 
 // Ports
-import type { PostRepoPort } from '../ports/post.repo.port';
+import type { PostRepoPort } from '../port/post.repo.port';
 import type { UserRepoPort } from '@/user/application/port/user.repo.port';
 
 // Errors
 import { UserInactiveError, UserNotFoundError } from '@/user/domain/errors';
-import { PostEntityDTOMapperPort } from '../ports/post.mapper.port';
-import type { PostEventPublisherPort } from '../ports/event.publisher.port';
+import { PostEntityDTOMapperPort } from '../port/post.mapper.port';
+import type { PostEventPublisherPort } from '../port/event.publisher.port';
 
 // Entities, Value Objects, && DTOs
 import { UserId } from '@/user/domain/value-object/user-id.vo';

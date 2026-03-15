@@ -13,6 +13,22 @@ import {
 export class PrismaFollowRepo implements FollowRepoPort {
   constructor(private readonly prisma: PrismaService) {}
 
+  async listAllFollowers(userId: UserId) {
+    const followers = await this.prisma.follow.findMany({
+      where: { followingId: userId.toString() },
+      include: {
+        follower: {
+          include: {
+            profile: true,
+          },
+        },
+      },
+    });
+    return followers.map((f) =>
+      UserPrismaMapper.toDomain(f.follower as unknown as PrismaUser),
+    );
+  }
+
   async listFollowers(
     userId: UserId,
     pagination?: { cursor?: string; take?: number },

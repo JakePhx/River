@@ -50,6 +50,8 @@ model User {
 
   profile Profile?
 
+  hasUnreadNotifications Boolean @default(false)
+
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   notifications Notification[]
@@ -133,13 +135,13 @@ model Post {
 }
 
 model Notification {
-  id      String @id @default(uuid())
-  actorId String
-  author  User   @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  type      String
-  entity_id String
-  is_read   Boolean @default(false)
+  type    String
+  payload Json
+  isRead  Boolean @default(false)
 
   eventId     String
   processedAt DateTime?

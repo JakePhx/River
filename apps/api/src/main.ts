@@ -33,17 +33,16 @@ async function bootstrap() {
     transport: Transport.KAFKA,
     options: {
       client: {
-        clientId: 'notification-consumer-client',
+        clientId: 'social-app-consumer',
         brokers: ['localhost:9092'],
       },
       consumer: {
-        groupId: 'notification-consumer-group',
+        groupId: 'social-app-consumer-group',
       },
     },
   });
 
   await app.startAllMicroservices();
-
   await app.listen(3000);
 }
 

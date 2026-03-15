@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/_shared/infra/prisma/prisma.service';
-import type { PostRepoPort } from '@/post/application/ports/post.repo.port';
+import type { PostRepoPort } from '@/post/application/port/post.repo.port';
 import { UserId } from '@/user/domain/value-object/user-id.vo';
 import { PostEntity } from '@/post/domain/post.entity';
 import {
