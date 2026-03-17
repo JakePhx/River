@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TOKENS } from '../../application/tokens';
+import { KAFKA_BROKERS } from '../../application/env';
 
 @Module({
   imports: [
@@ -11,7 +12,7 @@ import { TOKENS } from '../../application/tokens';
         options: {
           client: {
             clientId: 'social-app',
-            brokers: ['localhost:9092'],
+            brokers: KAFKA_BROKERS.split(','),
           },
           producer: {
             allowAutoTopicCreation: true,
