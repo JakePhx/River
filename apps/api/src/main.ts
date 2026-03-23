@@ -31,8 +31,19 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new DomainExceptionFilter());
 
+  const corsOrigins =
+    process.env.ENVIRONMENT === 'development'
+      ? Array.from(
+          new Set([
+            CLIENT_URL,
+            'http://localhost:5173',
+            'http://127.0.0.1:5173',
+          ]),
+        )
+      : [CLIENT_URL];
+
   app.enableCors({
-    origin: [CLIENT_URL],
+    origin: corsOrigins,
     credentials: true,
   });
 
