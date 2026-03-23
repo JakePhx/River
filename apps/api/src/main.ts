@@ -52,10 +52,23 @@ async function bootstrap() {
     options: {
       client: {
         clientId: 'social-app-consumer',
-        brokers: KAFKA_BROKERS.split(','),
+        brokers: KAFKA_BROKERS.split(',').map((b) => b.trim()),
+        connectionTimeout: 10_000,
+        requestTimeout: 30_000,
+        retry: {
+          retries: 10,
+          initialRetryTime: 300,
+          maxRetryTime: 30_000,
+        },
       },
       consumer: {
         groupId: 'social-app-consumer-group',
+        allowAutoTopicCreation: true,
+        sessionTimeout: 30_000,
+        heartbeatInterval: 3_000,
+      },
+      subscribe: {
+        fromBeginning: true,
       },
     },
   });
