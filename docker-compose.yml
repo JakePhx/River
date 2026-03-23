@@ -47,12 +47,37 @@ services:
       timeout: 10s
       retries: 10
 
+  # Ensures Nest consumers can subscribe (avoids UNKNOWN_TOPIC_OR_PARTITION on cold start).
+  kafka-init:
+    image: confluentinc/cp-kafka:7.7.0
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: "no"
+    command:
+      [
+        "kafka-topics",
+        "--bootstrap-server",
+        "kafka:9092",
+        "--create",
+        "--if-not-exists",
+        "--topic",
+        "post.created",
+        "--partitions",
+        "1",
+        "--replication-factor",
+        "1",
+      ]
+
   api:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
     env_file:
       - apps/api/.env
+    environment:
+      # .env uses 127.0.0.1 for host-side Prisma; inside Compose the DB hostname is `db`.
+      DATABASE_URL: postgresql://admin:admin123@db:5432/linktree
     ports:
       - "3000:3000"
     volumes:
@@ -66,6 +91,31 @@ services:
         condition: service_started
       kafka:
         condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    env_file:
+      - apps/web/.env
+    environment:
+      # Vite proxy runs inside this container; `api` / `localstack` are Compose service names.
+      API_PROXY_TARGET: http://api:3000
+      S3_PROXY_TARGET: http://localstack:4566
+      # Browser runs on the host: SigV4 breaks if PUBLIC_S3_* use same-origin `/s3` (path rewrite).
+      PUBLIC_S3_ENDPOINT: http://127.0.0.1:4566
+      PUBLIC_S3_ASSET_BASE_URL: http://127.0.0.1:4566
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+    depends_on:
+      api:
+        condition: service_started
+      localstack:
+        condition: service_started
 
 volumes:
   db_data:
