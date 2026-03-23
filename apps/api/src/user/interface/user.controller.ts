@@ -17,7 +17,7 @@ import { GetMeUseCase } from '@/user/application/usecase/get-me.usecase';
 import { GetByIdUseCase } from '@/user/application/usecase/get-by-id.usecase';
 import { ListUserUseCase } from '@/user/application/usecase/list-user.usecase';
 import { UpdateMyProfileUseCase } from '@/user/application/usecase/update-my-profile.usecase';
-import { GetUserPostsUseCase } from '@/post/application/use-cases/get-user-posts.usecase';
+import { GetUserPostsUseCase } from '@/post/application/usecase/get-user-posts.usecase';
 import { ListFollowersUseCase } from '@/follow/application/usecase/list-followers.usecase';
 import { ListFollowingUseCase } from '@/follow/application/usecase/list-following.usecase';
 

@@ -7,6 +7,7 @@ import { PostModule } from './post/post.module';
 import { FollowModule } from './follow/follow.module';
 import { BlockModule } from './block/block.module';
 import { JwtStrategy } from './_shared/interface/strategies/jwt.strategy';
+import { KafkaModule } from './_shared/infra/kakfa/kafka.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { JwtStrategy } from './_shared/interface/strategies/jwt.strategy';
     PostModule,
     FollowModule,
     BlockModule,
+    KafkaModule,
   ],
   providers: [JwtStrategy],
 })

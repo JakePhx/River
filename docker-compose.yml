@@ -9,6 +9,11 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d linktree"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
 
   localstack:
     image: localstack/localstack:3
@@ -27,7 +32,7 @@ services:
       - "9092:9092"
     environment:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:29093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_PROCESS_ROLES: broker,controller
@@ -36,24 +41,31 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
 
   api:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    environment:
-      ENVIRONMENT: development
-      DATABASE_URL: postgres://admin:admin123@db:5432/linktree
-      JWT_ACCESS_SECRET: dev_jwt_secret_change_me
+    env_file:
+      - apps/api/.env
     ports:
       - "3000:3000"
     volumes:
       - .:/app
-      - /app/node_modules
-      - /app/apps/api/node_modules
+      # - /app/node_modules
+      # - /app/apps/api/node_modules
     depends_on:
-      - db
-      - localstack
+      db:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+      kafka:
+        condition: service_healthy
 
 volumes:
   db_data:

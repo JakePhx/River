@@ -13,6 +13,7 @@ export interface FollowRepoPort {
     userId: UserId,
     pagination?: { cursor?: string; take?: number },
   ): Promise<{ items: UserEntity[]; nextCursor: string | null }>;
+  listAllFollowers(userId: UserId): Promise<UserEntity[]>;
   listFollowing(
     userId: UserId,
     pagination?: { cursor?: string; take?: number },

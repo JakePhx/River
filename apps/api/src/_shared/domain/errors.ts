@@ -1,5 +1,3 @@
-import { HttpStatus } from '@nestjs/common';
-
 export type DOMAIN_ERROR_CODE = string;
 export type DOMAIN_ERROR_MESSAGE = string;
 

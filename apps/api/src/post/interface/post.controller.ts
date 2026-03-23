@@ -11,8 +11,8 @@ import {
 import { JwtAuthGuard } from '@/_shared/interface/guards/jwt-auth.guard';
 
 // Use Cases
-import { CreatePostUseCase } from '../application/use-cases/create-post.usecase';
-import { GetFeedUseCase } from '../application/use-cases/get-feed.usecase';
+import { CreatePostUseCase } from '../application/usecase/create-post.usecase';
+import { GetFeedUseCase } from '../application/usecase/get-feed.usecase';
 
 // DTOs
 import {
