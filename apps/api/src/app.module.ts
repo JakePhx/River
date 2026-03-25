@@ -8,6 +8,8 @@ import { FollowModule } from './follow/follow.module';
 import { BlockModule } from './block/block.module';
 import { JwtStrategy } from './_shared/interface/strategies/jwt.strategy';
 import { KafkaModule } from './_shared/infra/kakfa/kafka.module';
+import { NotificationModule } from './notification/notification.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { KafkaModule } from './_shared/infra/kakfa/kafka.module';
     FollowModule,
     BlockModule,
     KafkaModule,
+    NotificationModule,
+    ChatModule,
   ],
   providers: [JwtStrategy],
 })

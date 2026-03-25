@@ -9,9 +9,15 @@ import { TOKENS } from '@/_shared/application/tokens';
 import { PrismaPostRepo } from './infra/persistence/prisma/prisma-post.repo';
 import { KafkaPostEventPublisher } from './infra/kafka/publishers/kafka-event.publisher';
 import { KafkaModule } from '@/_shared/infra/kakfa/kafka.module';
+import { NotificationModule } from '@/notification/notification.module';
 
 @Module({
-  imports: [PrismaModule, forwardRef(() => UserModule), KafkaModule],
+  imports: [
+    PrismaModule,
+    forwardRef(() => UserModule),
+    KafkaModule,
+    forwardRef(() => NotificationModule),
+  ],
   controllers: [PostController],
   providers: [
     // Use cases

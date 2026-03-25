@@ -40,11 +40,11 @@ export class CreatePostUseCase {
       content: input.content,
     });
 
-    await this.postRepo.create(post);
+    const saved = await this.postRepo.create(post);
 
     await this.postEventPublisher.publishPostCreatedEvent({
-      postId: post.id.toString(),
-      authorId: post.authorId.toString(),
+      postId: saved.id.toString(),
+      authorId: saved.authorId.toString(),
     });
 
     return {
