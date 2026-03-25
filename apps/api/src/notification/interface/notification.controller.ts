@@ -1,13 +1,13 @@
 // src/notification/interface/notification.controller.ts
-import { Controller, Get, Inject, Patch, Param, Req } from '@nestjs/common';
-import { TOKENS } from '@/_shared/application/tokens';
+import { Controller, Get, Patch, Param, Req, UseGuards } from '@nestjs/common';
 
-// Ports
-import type { GetNotificationsUseCase } from '@/notification/application/usecase/get-notifications.usecase';
-import type { NotificationRepoPort } from '@/notification/application/port/notification.repo.port';
+import { JwtAuthGuard } from '@/_shared/interface/guards/jwt-auth.guard';
+
+import { GetNotificationsUseCase } from '@/notification/application/usecase/get-notifications.usecase';
 import { MarkNotificationReadUseCase } from '@/notification/application/usecase/mark-notification-read.usecase';
 
 @Controller('notifications')
+@UseGuards(JwtAuthGuard)
 export class NotificationController {
   constructor(
     private readonly getNotificationsUseCase: GetNotificationsUseCase,
@@ -16,12 +16,12 @@ export class NotificationController {
 
   @Get()
   async getMyNotifications(@Req() req: any) {
-    return this.getNotificationsUseCase.execute(req.user.id);
+    return this.getNotificationsUseCase.execute(req.user.userId.toString());
   }
 
   @Patch(':id/read')
   async markAsRead(@Param('id') id: string, @Req() req: any) {
-    const userId = req.user.id;
+    const userId = req.user.userId.toString();
 
     await this.markNotificationReadUseCase.execute({
       notificationId: id,

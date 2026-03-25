@@ -50,7 +50,11 @@ export class CreatePostNotificationsUseCase {
         NotificationEntity.create({
           userId: follower.id.toString(),
           type: NotificationType.POST_CREATED,
-          payload: { postId },
+          payload: {
+            postId,
+            authorId,
+            redirectURL: `/posts/${encodeURIComponent(postId)}`,
+          },
           //Todo: add eventId
           eventId: '',
         }),

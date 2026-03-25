@@ -5,6 +5,7 @@ build/
 apps/**/node_modules
 packages/**/node_modules
 apps/api/src/infrastructure/prisma/migrations
+.pnpm-store
 
 # Logs
 logs

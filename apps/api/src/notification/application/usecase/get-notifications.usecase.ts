@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { TOKENS } from '@/_shared/application/tokens';
 
 // Ports
@@ -10,6 +10,7 @@ import { NotificationEntity } from '@/notification/domain/notification.entity';
 import { UserNotFoundError } from '@/user/domain/errors';
 import { UserId } from '@/user/domain/value-object/user-id.vo';
 
+@Injectable()
 export class GetNotificationsUseCase {
   constructor(
     @Inject(TOKENS.NOTIFICATION_REPO)

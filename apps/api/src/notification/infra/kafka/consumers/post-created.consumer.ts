@@ -3,8 +3,7 @@ import { Controller, Logger } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { EVENT_TYPE } from '@/_shared/domain/events';
 
-// Use Cases
-import type { CreatePostNotificationsUseCase } from '@/notification/application/usecase/crate-post-notifications.usecase';
+import { CreatePostNotificationsUseCase } from '@/notification/application/usecase/crate-post-notifications.usecase';
 import type { PostCreatedDomainEvent } from '@/notification/domain/post-created.domain-event';
 
 @Controller()
