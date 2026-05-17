@@ -10,7 +10,10 @@ export class UserId {
     return new UserId(`user_${randomUUID()}`);
   }
 
-  static from(value: string): UserId {
+  static from(value: string | UserId): UserId {
+    if (value instanceof UserId) {
+      return value;
+    }
     if (!this.isValid(value)) {
       throw new UserIdInvalidError();
     }

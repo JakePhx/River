@@ -6,6 +6,8 @@ import meReducer from "../features/me/me.slice";
 import feedReducer from "../features/post/post.slice";
 import relationsReducer from "../features/relation/relation.slice";
 import usersReducer from "../features/user/user.slice";
+import notificationsReducer from "../features/notification/notification.slice";
+import chatReducer from "../features/chat/chat.slice";
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +16,8 @@ export const store = configureStore({
     feed: feedReducer,
     relations: relationsReducer,
     users: usersReducer,
+    notifications: notificationsReducer,
+    chat: chatReducer,
   },
 });
 

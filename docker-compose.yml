@@ -42,7 +42,11 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost 9092 || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "kafka-topics --bootstrap-server localhost:9092 --list >/dev/null 2>&1",
+        ]
       interval: 5s
       timeout: 10s
       retries: 10
@@ -56,17 +60,9 @@ services:
     restart: "no"
     command:
       [
-        "kafka-topics",
-        "--bootstrap-server",
-        "kafka:9092",
-        "--create",
-        "--if-not-exists",
-        "--topic",
-        "post.created",
-        "--partitions",
-        "1",
-        "--replication-factor",
-        "1",
+        "sh",
+        "-c",
+        "for topic in post.created post.commented follow.received follow.request.accepted chat.request.accepted; do kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic \"$$topic\" --partitions 1 --replication-factor 1; done",
       ]
 
   api:
@@ -82,8 +78,8 @@ services:
       - "3000:3000"
     volumes:
       - .:/app
-      # - /app/node_modules
-      # - /app/apps/api/node_modules
+      - /app/node_modules
+      - /app/apps/api/node_modules
     depends_on:
       db:
         condition: service_healthy
@@ -111,6 +107,8 @@ services:
       - "5173:5173"
     volumes:
       - .:/app
+      - /app/node_modules
+      - /app/apps/web/node_modules
     depends_on:
       api:
         condition: service_started

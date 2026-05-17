@@ -7,9 +7,16 @@ interface DialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
+  /** Applied to the centered panel (default is max-w-lg). */
+  panelClassName?: string;
 }
 
-export function Dialog({ open, onOpenChange, children }: DialogProps) {
+export function Dialog({
+  open,
+  onOpenChange,
+  children,
+  panelClassName,
+}: DialogProps) {
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -32,7 +39,14 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
         className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
         onClick={() => onOpenChange(false)}
       />
-      <div className="relative w-full max-w-lg rounded-lg bg-white shadow-xl dark:bg-gray-900 overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div
+        className={cn(
+          "relative w-full max-w-lg overflow-hidden rounded-lg border border-border",
+          "bg-background text-foreground shadow-xl",
+          "animate-in fade-in zoom-in duration-200",
+          panelClassName,
+        )}
+      >
         {children}
       </div>
     </div>,
@@ -53,8 +67,9 @@ export function DialogContent({
     <div className={cn("relative p-6", className)}>
       {onClose && (
         <button
+          type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 disabled:pointer-events-none dark:ring-offset-gray-950 dark:focus:ring-gray-300"
+          className="absolute right-4 top-4 rounded-sm text-muted-foreground opacity-80 transition-opacity hover:opacity-100 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background disabled:pointer-events-none"
         >
           <X className="h-4 w-4" />
           <span className="sr-only">Close</span>
@@ -94,7 +109,7 @@ export function DialogTitle({
   return (
     <h3
       className={cn(
-        "text-lg font-semibold leading-none tracking-tight",
+        "text-lg font-semibold leading-none tracking-tight text-foreground",
         className,
       )}
     >

@@ -7,6 +7,7 @@ import type {
   AcceptFollowResponseDTO,
   BlockTargetBodyDTO,
   BlockTargetResponseDTO,
+  ErrorResponseDTO,
   FollowTargetBodyDTO,
   FollowTargetResponseDTO,
   RejectFollowBodyDTO,
@@ -17,6 +18,8 @@ import type {
   UnFollowTargetBodyDTO,
   UnFollowTargetResponseDTO,
 } from "@social/shared";
+import type { ListUserResponse, User } from "../user/user.types";
+import { UserMapper } from "../user/user.mapper";
 import type {
   AcceptFollowRequestResponse,
   BlockTargetResponse,
@@ -40,12 +43,18 @@ type RelationsSliceState = {
   byUserId: Record<string, RelationState | undefined>;
   status: "idle" | "loading" | "failed";
   error: FollowTargetError | null;
+  blockedList: {
+    items: User[];
+    status: "idle" | "loading" | "failed";
+    error: ErrorResponseDTO | null;
+  };
 };
 
 const initialState: RelationsSliceState = {
   byUserId: {},
   status: "idle",
   error: null,
+  blockedList: { items: [], status: "idle", error: null },
 };
 
 export const followUser = createAsyncThunk<
@@ -165,7 +174,6 @@ export const blockUser = createAsyncThunk<
   BlockTargetBodyDTO
 >("relations/block", async (dto, { rejectWithValue }) => {
   try {
-    await api.post("/blocks", dto);
     const res = await api.post<BlockTargetResponse>("/blocks", dto);
     if ("error" in res.data) {
       return rejectWithValue(res.data.error);
@@ -184,7 +192,6 @@ export const unblockUser = createAsyncThunk<
   UnBlockTargetBodyDTO
 >("relations/unblock", async (dto, { rejectWithValue }) => {
   try {
-    await api.delete("/blocks", { data: dto });
     const res = await api.delete<UnBlockTargetResponse>("/blocks", {
       data: dto,
     });
@@ -200,6 +207,24 @@ export const unblockUser = createAsyncThunk<
   }
 });
 
+export const fetchBlockedUsers = createAsyncThunk<User[], void>(
+  "relations/fetchBlockedUsers",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await api.get<ListUserResponse>("/blocks");
+      if ("error" in res.data) {
+        return rejectWithValue(res.data.error);
+      }
+      return res.data.items.map((u) => UserMapper.toUser(u));
+    } catch (e) {
+      return rejectWithValue({
+        code: "FETCH_BLOCKED_USERS_FAILED",
+        message: getApiErrorMessage(e),
+      });
+    }
+  },
+);
+
 const relationsSlice = createSlice({
   name: "relations",
   initialState,
@@ -208,6 +233,7 @@ const relationsSlice = createSlice({
       state.byUserId = {};
       state.status = "idle";
       state.error = null;
+      state.blockedList = { items: [], status: "idle", error: null };
     },
     setRelationState(
       state,
@@ -247,6 +273,10 @@ const relationsSlice = createSlice({
       .addCase(blockUser.pending, start)
       .addCase(unblockUser.pending, start)
       .addCase(fetchRelation.pending, start)
+      .addCase(fetchBlockedUsers.pending, (state) => {
+        state.blockedList.status = "loading";
+        state.blockedList.error = null;
+      })
       .addCase(followUser.rejected, fail)
       .addCase(unfollowUser.rejected, fail)
       .addCase(cancelFollowRequest.rejected, fail)
@@ -255,9 +285,18 @@ const relationsSlice = createSlice({
       .addCase(blockUser.rejected, fail)
       .addCase(unblockUser.rejected, fail)
       .addCase(fetchRelation.rejected, fail)
+      .addCase(fetchBlockedUsers.rejected, (state, action) => {
+        state.blockedList.status = "failed";
+        state.blockedList.error = action.payload as ErrorResponseDTO;
+      })
       .addCase(fetchRelation.fulfilled, (state, action) => {
         done(state);
         state.byUserId[action.payload.targetUserId] = action.payload.rel;
+      })
+      .addCase(fetchBlockedUsers.fulfilled, (state, action) => {
+        state.blockedList.status = "idle";
+        state.blockedList.error = null;
+        state.blockedList.items = action.payload;
       })
       .addCase(followUser.fulfilled, (state, action) => {
         done(state);
@@ -316,6 +355,9 @@ const relationsSlice = createSlice({
           ...prev,
           blocked: false,
         };
+        state.blockedList.items = state.blockedList.items.filter(
+          (u) => u.id !== action.payload.targetUserId,
+        );
       });
   },
 });

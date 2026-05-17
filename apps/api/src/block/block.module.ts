@@ -9,6 +9,7 @@ import { BlockController } from './interface/block.controller';
 // Use cases
 import { BlockUserUseCase } from './application/usecase/block-user.usecase';
 import { UnblockUserUseCase } from './application/usecase/unblock-user.usecase';
+import { ListBlockedUsersUseCase } from './application/usecase/list-blocked-users.usecase';
 
 // Repositories
 import { PrismaBlockRepo } from './infra/persistence/prisma/prisma-block.repo';
@@ -20,6 +21,7 @@ import { PrismaBlockRepo } from './infra/persistence/prisma/prisma-block.repo';
     // Use cases
     BlockUserUseCase,
     UnblockUserUseCase,
+    ListBlockedUsersUseCase,
 
     // Repositories
     { provide: TOKENS.BLOCK_REPO, useClass: PrismaBlockRepo },

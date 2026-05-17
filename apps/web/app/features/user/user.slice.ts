@@ -10,6 +10,7 @@ import {
   unfollowUser,
   blockUser,
 } from "../relation/relation.slice";
+import { deletePost, updatePost } from "../post/post.slice";
 
 // utilities
 import { api, getApiErrorMessage } from "../../shared/api/client";
@@ -488,6 +489,23 @@ const usersSlice = createSlice({
             u.followersCount =
               userById?.followersCount ?? Math.max(0, u.followersCount - 1);
           }
+        }
+      })
+      .addCase(updatePost.fulfilled, (state, action) => {
+        const updated = action.payload;
+        for (const uid of Object.keys(state.userPosts)) {
+          const up = state.userPosts[uid];
+          if (!up) continue;
+          const i = up.items.findIndex((p) => p.id === updated.id);
+          if (i !== -1) up.items[i] = updated;
+        }
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        const { postId } = action.payload;
+        for (const uid of Object.keys(state.userPosts)) {
+          const up = state.userPosts[uid];
+          if (!up) continue;
+          up.items = up.items.filter((p) => p.id !== postId);
         }
       });
   },

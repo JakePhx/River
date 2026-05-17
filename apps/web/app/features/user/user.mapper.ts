@@ -1,12 +1,13 @@
 import type { UserResponseDTO } from "@social/shared";
+import { toIsoTimestamp } from "../../shared/datetime";
 import type { User } from "./user.types";
 
 export class UserMapper {
   static toUser(user: UserResponseDTO): User {
     return {
       id: user.id,
-      createdAt: new Date(user.createdAt),
-      updatedAt: new Date(user.updatedAt),
+      createdAt: toIsoTimestamp(user.createdAt),
+      updatedAt: toIsoTimestamp(user.updatedAt),
       name: user.name,
       email: user.email,
       username: user.username,
@@ -19,10 +20,10 @@ export class UserMapper {
       profile: {
         id: user.profile?.id,
         createdAt: user.profile?.createdAt
-          ? new Date(user.profile.createdAt)
+          ? toIsoTimestamp(user.profile.createdAt)
           : undefined,
         updatedAt: user.profile?.updatedAt
-          ? new Date(user.profile.updatedAt)
+          ? toIsoTimestamp(user.profile.updatedAt)
           : undefined,
         title: user.profile?.title,
         company: user.profile?.company,
@@ -31,7 +32,7 @@ export class UserMapper {
         coverUrl: user.profile?.coverUrl,
         website: user.profile?.website,
         birthDate: user.profile?.birthDate
-          ? new Date(user.profile.birthDate)
+          ? toIsoTimestamp(user.profile.birthDate)
           : undefined,
         location: user.profile?.location,
         avatarUrl: user.profile?.avatarUrl,

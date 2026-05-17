@@ -15,6 +15,7 @@ import {
   unfollowUser,
   blockUser,
 } from "../relation/relation.slice";
+import { deletePost } from "../post/post.slice";
 import type { UpdateProfileBodyDTO } from "@social/shared";
 
 type MeState = {
@@ -139,6 +140,12 @@ const meSlice = createSlice({
       .addCase(blockUser.fulfilled, (state) => {
         if (state.me) {
           state.me.followingCount = Math.max(0, state.me.followingCount - 1);
+        }
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        const { authorId } = action.payload;
+        if (state.me && state.me.id === authorId) {
+          state.me.postCount = Math.max(0, state.me.postCount - 1);
         }
       });
   },

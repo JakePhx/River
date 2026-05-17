@@ -57,9 +57,17 @@ export {
 // Post DTOs
 export { CreatePostBodyDTO } from "./post/create-post.body.dto";
 export {
+  CreatePostAttachmentBodyDTO,
+  CreatePostAttachmentKindDTO,
+} from "./post/create-post-attachment.body.dto";
+export { PostAttachmentResponseDTO } from "./post/post-attachment.response.dto";
+export { UpdatePostBodyDTO } from "./post/update-post.body.dto";
+export {
   CreatePostResponseDTO,
   CreatePostErrorResponseDTO,
 } from "./post/create-post.response.dto";
+export { UpdatePostResponseDTO } from "./post/update-post.response.dto";
+export { DeletePostResponseDTO } from "./post/delete-post.response.dto";
 export {
   PostResponseDTO,
   PostErrorResponseDTO,
@@ -68,6 +76,14 @@ export {
   ListPostResponseDTO,
   ListPostErrorResponseDTO,
 } from "./post/post-list.response.dto";
+export { CommentResponseDTO } from "./post/comment.response.dto";
+export { CreateCommentBodyDTO } from "./post/create-comment.body.dto";
+export {
+  CreateCommentResponseDTO,
+  CreateCommentErrorResponseDTO,
+} from "./post/create-comment.response.dto";
+export { GetPostDetailResponseDTO } from "./post/post-detail.response.dto";
+export { ListCommentsResponseDTO } from "./post/list-comments.response.dto";
 
 // BlockDTOs
 export {
@@ -80,6 +96,25 @@ export {
   BlockTargetErrorResponseDTO,
   UnBlockTargetErrorResponseDTO,
 } from "./block/block-target.response.dto";
+
+// Chat DTOs
+export {
+  CHAT_ATTACHMENT_MAX_BYTES,
+  ChatMessageAttachmentBodyDTO,
+} from "./chat/chat-attachment.body.dto";
+export { SendChatMessageBodyDTO } from "./chat/send-chat-message.body.dto";
+export { UpdateChatMessageBodyDTO } from "./chat/update-chat-message.body.dto";
+export { ChatPeerSummaryDTO } from "./chat/chat-peer.response.dto";
+export type { ChatThreadStatusDTO } from "./chat/chat-thread.response.dto";
+export { ChatThreadSummaryDTO } from "./chat/chat-thread.response.dto";
+export {
+  ChatMessageDTO,
+  ChatMessageAttachmentResponseDTO,
+  ChatMessageReplyPreviewDTO,
+} from "./chat/chat-message.response.dto";
+export { ListChatThreadsResponseDTO } from "./chat/list-chat-threads.response.dto";
+export { ListChatMessagesResponseDTO } from "./chat/list-chat-messages.response.dto";
+export { ChatUnreadSummaryDTO } from "./chat/chat-unread.response.dto";
 
 // Error DTOs
 export { ErrorResponseDTO } from "./error.response.dto";

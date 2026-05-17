@@ -12,8 +12,14 @@ import type { PostEventPublisherPort } from '../port/event.publisher.port';
 
 // Entities, Value Objects, && DTOs
 import { UserId } from '@/user/domain/value-object/user-id.vo';
-import { CreatePostBodyDTO, CreatePostResponseDTO } from '@social/shared';
+import {
+  CreatePostAttachmentKindDTO,
+  CreatePostBodyDTO,
+  CreatePostResponseDTO,
+} from '@social/shared';
 import { PostEntity } from '@/post/domain/post.entity';
+import { ValidationError } from '@/_shared/domain/errors';
+import { PostErrorCode } from '@/post/domain/errors';
 
 @Injectable()
 export class CreatePostUseCase {
@@ -35,9 +41,26 @@ export class CreatePostUseCase {
     if (!user) throw new UserNotFoundError();
     if (!user.isActive) throw new UserInactiveError();
 
+    const attachments = (input.attachments ?? []).map((a) => ({
+      url: a.url,
+      contentType: a.contentType,
+      byteSize: a.byteSize,
+      kind:
+        a.kind === CreatePostAttachmentKindDTO.video ? ('VIDEO' as const) : ('IMAGE' as const),
+    }));
+
+    const text = input.content.trim();
+    if (!text && attachments.length === 0) {
+      throw new ValidationError({
+        code: PostErrorCode.POST_BODY_EMPTY,
+        message: 'Add text or at least one attachment.',
+      });
+    }
+
     const post = PostEntity.create({
       author: user,
-      content: input.content,
+      content: text,
+      attachments,
     });
 
     const saved = await this.postRepo.create(post);
@@ -49,7 +72,7 @@ export class CreatePostUseCase {
 
     return {
       ok: true,
-      post: PostEntityDTOMapperPort.toDTO(post),
+      post: PostEntityDTOMapperPort.toDTO(saved),
     };
   }
 }

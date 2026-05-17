@@ -2,11 +2,10 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, Link } from "react-router";
 import {
   Settings,
+  SquarePen,
   MapPin,
   Link as LinkIcon,
   Calendar,
-  Mail,
-  Phone,
   User as UserIcon,
 } from "lucide-react";
 
@@ -49,6 +48,7 @@ import {
   fetchRelation,
 } from "../../features/relation/relation.slice";
 import { PostCard } from "../../features/post/components/PostCard";
+import { NewPostModal } from "../../features/post/components/NewPostModal";
 import { cn } from "~/lib/utils";
 
 type Tab = "posts" | "followers" | "following";
@@ -80,6 +80,7 @@ export default function ProfileRoute() {
 
   const [activeTab, setActiveTab] = useState<Tab>("posts");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isNewPostModalOpen, setIsNewPostModalOpen] = useState(false);
 
   // Pagination states from Redux
   const userPosts = useAppSelector((s) =>
@@ -188,8 +189,6 @@ export default function ProfileRoute() {
   const isBlocked = rel?.blocked ?? false;
   const followStatus = rel?.followStatus ?? "NONE";
 
-  console.log(user.profile);
-
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Profile Header Card */}
@@ -216,15 +215,25 @@ export default function ProfileRoute() {
                   </CardTitle>
                   <p className="text-muted-foreground">@{user.username}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {isMe ? (
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setIsEditModalOpen(true)}
-                    >
-                      <Settings className="h-4 w-4" />
-                    </Button>
+                    <>
+                      <Button
+                        className="gap-1.5"
+                        onClick={() => setIsNewPostModalOpen(true)}
+                      >
+                        <SquarePen className="h-4 w-4" />
+                        New post
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setIsEditModalOpen(true)}
+                        aria-label="Edit profile"
+                      >
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                    </>
                   ) : (
                     <div className="flex gap-2">
                       {isBlocked ? (
@@ -238,6 +247,11 @@ export default function ProfileRoute() {
                         </Button>
                       ) : (
                         <>
+                          <Button variant="outline" asChild>
+                            <Link to={`/messages?with=${user.id}`}>
+                              Message
+                            </Link>
+                          </Button>
                           {followStatus === "FOLLOWING" ? (
                             <Button
                               variant="secondary"
@@ -455,11 +469,23 @@ export default function ProfileRoute() {
 
       {/* Edit Profile Modal */}
       {isMe && (
-        <EditProfileModal
-          open={isEditModalOpen}
-          onOpenChange={setIsEditModalOpen}
-          user={user}
-        />
+        <>
+          <NewPostModal
+            open={isNewPostModalOpen}
+            onOpenChange={setIsNewPostModalOpen}
+            onPosted={() => {
+              void dispatch(
+                fetchUserPosts({ userId: user.id, reset: true }),
+              );
+              void dispatch(fetchUserByUsername({ username }));
+            }}
+          />
+          <EditProfileModal
+            open={isEditModalOpen}
+            onOpenChange={setIsEditModalOpen}
+            user={user}
+          />
+        </>
       )}
     </div>
   );

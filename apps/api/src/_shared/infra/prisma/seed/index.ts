@@ -10,27 +10,22 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 export async function main() {
-  const userCount = await prisma.user.count();
+  try {
+    const userCount = await prisma.user.count();
 
-  if (userCount > 0) {
-    console.log('Database already seeded, skipping...');
-    return;
-  }
+    if (userCount > 0) {
+      console.log('Database already seeded, skipping...');
+      return;
+    }
 
-  console.log('Seeding database...');
+    console.log('Seeding database...');
 
-  const users = await seedUser(prisma, 200);
+    const users = await seedUser(prisma, 200);
 
-  await seedPost(prisma, users);
+    await seedPost(prisma, users);
 
-  console.log('Seed completed');
-}
-
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
+    console.log('Seed completed');
+  } finally {
     await prisma.$disconnect();
-  });
+  }
+}

@@ -14,10 +14,15 @@ import { NotificationWsController } from './interface/notification.ws.controller
 
 // Use Cases
 import { CreatePostNotificationsUseCase } from './application/usecase/crate-post-notifications.usecase';
+import { CreateUserNotificationUseCase } from './application/usecase/create-user-notification.usecase';
 import { MarkNotificationReadUseCase } from './application/usecase/mark-notification-read.usecase';
 import { GetNotificationsUseCase } from './application/usecase/get-notifications.usecase';
 
 // Infra
+import { ChatRequestAcceptedConsumer } from './infra/kafka/consumers/chat-request-accepted.consumer';
+import { FollowReceivedConsumer } from './infra/kafka/consumers/follow-received.consumer';
+import { FollowRequestAcceptedConsumer } from './infra/kafka/consumers/follow-request-accepted.consumer';
+import { PostCommentedConsumer } from './infra/kafka/consumers/post-commented.consumer';
 import { PostCreatedConsumer } from './infra/kafka/consumers/post-created.consumer';
 import { NotificationPrismaRepo } from './infra/prisma/notification-prisma.repo';
 
@@ -28,11 +33,19 @@ import { NotificationPrismaRepo } from './infra/prisma/notification-prisma.repo'
     forwardRef(() => UserModule),
     forwardRef(() => FollowModule),
   ],
-  controllers: [NotificationController, PostCreatedConsumer],
+  controllers: [
+    NotificationController,
+    PostCreatedConsumer,
+    PostCommentedConsumer,
+    FollowReceivedConsumer,
+    FollowRequestAcceptedConsumer,
+    ChatRequestAcceptedConsumer,
+  ],
   providers: [
     NotificationWsController,
     GetNotificationsUseCase,
     CreatePostNotificationsUseCase,
+    CreateUserNotificationUseCase,
     MarkNotificationReadUseCase,
     {
       provide: TOKENS.NOTIFICATION_REPO,
@@ -43,6 +56,5 @@ import { NotificationPrismaRepo } from './infra/prisma/notification-prisma.repo'
       useClass: NotificationWsController,
     },
   ],
-  exports: [],
 })
 export class NotificationModule {}

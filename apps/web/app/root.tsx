@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { useEffect } from "react";
 import {
   isRouteErrorResponse,
   Links,
@@ -12,6 +13,9 @@ import { Provider } from "react-redux";
 import type { Route } from "./+types/root";
 import "./app.css";
 import { store } from "./store/store";
+import { ToastProvider } from "./components/ToastProvider";
+import { useAppDispatch } from "./store/hooks";
+import { hydrateFromStorage } from "./features/auth/auth.slice";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -44,10 +48,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+function AuthBootstrap() {
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(hydrateFromStorage());
+  }, [dispatch]);
+  return null;
+}
+
 export default function App() {
   return (
     <Provider store={store}>
-      <Outlet />
+      <AuthBootstrap />
+      <ToastProvider>
+        <Outlet />
+      </ToastProvider>
     </Provider>
   );
 }

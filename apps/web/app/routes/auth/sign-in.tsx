@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router";
+import { useState } from "react";
+import { Link, useSearchParams } from "react-router";
 
 import { Button } from "../../components/ui/button";
 import {
@@ -14,10 +14,21 @@ import { Label } from "../../components/ui/label";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { login } from "../../features/auth/auth.slice";
 
+function safeAppPath(next: string | null): string {
+  if (!next) return "/feed";
+  try {
+    const path = decodeURIComponent(next);
+    if (path.startsWith("/") && !path.startsWith("//")) return path;
+  } catch {
+    /* ignore malformed next */
+  }
+  return "/feed";
+}
+
 export default function SignInRoute() {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const [search] = useSearchParams();
+  const continueTo = safeAppPath(search.get("next"));
   const status = useAppSelector((s) => s.auth.status);
   const error = useAppSelector((s) => s.auth.error);
   const token = useAppSelector((s) => s.auth.accessToken);
@@ -26,13 +37,7 @@ export default function SignInRoute() {
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Redirect once we have both a token and user data (set by meSlice on login.fulfilled)
-  useEffect(() => {
-    if (token && me) {
-      const next = search.get("next");
-      navigate(next ? decodeURIComponent(next) : "/", { replace: true });
-    }
-  }, [token, me, navigate, search]);
+  const signedIn = Boolean(token && me);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +52,17 @@ export default function SignInRoute() {
           <CardDescription>Welcome back. Sign in to continue.</CardDescription>
         </CardHeader>
         <CardContent>
+          {signedIn ? (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                You’re signed in. Continue to the app when you’re ready.
+              </p>
+              <Button className="w-full" asChild>
+                <Link to={continueTo}>Continue</Link>
+              </Button>
+            </div>
+          ) : null}
+          {!signedIn ? (
           <form className="space-y-4" onSubmit={onSubmit}>
             <div className="space-y-2">
               <Label htmlFor="usernameOrEmail">Username or email</Label>
@@ -70,7 +86,9 @@ export default function SignInRoute() {
               />
             </div>
 
-            {error ? <p className="text-sm text-destructive">{error}</p> : null}
+            {error ? (
+              <p className="text-sm text-destructive">{error.message}</p>
+            ) : null}
 
             <Button
               type="submit"
@@ -90,6 +108,7 @@ export default function SignInRoute() {
               </Link>
             </p>
           </form>
+          ) : null}
         </CardContent>
       </Card>
     </div>

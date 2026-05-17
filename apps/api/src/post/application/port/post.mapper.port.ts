@@ -1,9 +1,26 @@
 import { PostEntity } from '../../domain/post.entity';
 import { UserEntityDTOMapperPort } from '@/user/application/port/user.mapper.port';
+import type { PostAttachmentEntity } from '@/post/domain/post-attachment.entity';
 
-import { PostResponseDTO } from '@social/shared';
+import {
+  type PostAttachmentResponseDTO,
+  PostResponseDTO,
+} from '@social/shared';
 
 export class PostEntityDTOMapperPort {
+  static attachmentToDTO(a: PostAttachmentEntity): PostAttachmentResponseDTO {
+    if (!a.id) {
+      throw new Error('Post attachment id is required to map to DTO');
+    }
+    return {
+      id: a.id,
+      url: a.url,
+      contentType: a.contentType,
+      byteSize: a.byteSize,
+      kind: a.kind === 'VIDEO' ? 'video' : 'image',
+    };
+  }
+
   static toDTO(post: PostEntity): PostResponseDTO {
     if (!post.author) {
       throw new Error('Post author must be populated to map to DTO');
@@ -15,6 +32,7 @@ export class PostEntityDTOMapperPort {
       content: post.content,
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
+      attachments: post.attachments.map((a) => this.attachmentToDTO(a)),
       author: UserEntityDTOMapperPort.toDTO(post.author),
     };
   }

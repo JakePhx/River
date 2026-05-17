@@ -1,8 +1,15 @@
-import { IsDate, IsObject, IsString, ValidateNested } from "class-validator";
+import {
+  IsArray,
+  IsDate,
+  IsObject,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 import { Type } from "class-transformer";
 
 import { UserResponseDTO } from "../user/user.response.dto";
 import { ErrorResponseDTO } from "../error.response.dto";
+import { PostAttachmentResponseDTO } from "./post-attachment.response.dto";
 
 export class PostResponseDTO {
   @IsString()
@@ -15,6 +22,10 @@ export class PostResponseDTO {
   createdAt!: Date;
   @IsDate()
   updatedAt!: Date;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PostAttachmentResponseDTO)
+  attachments!: PostAttachmentResponseDTO[];
   @IsObject()
   @ValidateNested()
   @Type(() => UserResponseDTO)

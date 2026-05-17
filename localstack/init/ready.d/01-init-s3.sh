@@ -6,13 +6,15 @@ region="${AWS_DEFAULT_REGION:-us-east-1}"
 
 echo "Creating bucket: ${bucket}"
 awslocal s3api create-bucket --bucket "${bucket}" --region "${region}" 2>/dev/null || true
+# Same bucket holds `avatars/*` and `posts/*` (browser uploads via PutObject).
 
 echo "Setting bucket CORS"
+# Browser hits Vite on many origins (localhost, 127.0.0.1, LAN IP with host: true). Wildcard avoids silent CORS failures before the API is called.
 awslocal s3api put-bucket-cors --bucket "${bucket}" --cors-configuration '{
   "CORSRules": [
     {
-      "AllowedOrigins": ["http://localhost:5173"],
-      "AllowedMethods": ["GET", "PUT", "HEAD"],
+      "AllowedOrigins": ["*"],
+      "AllowedMethods": ["GET", "PUT", "HEAD", "POST"],
       "AllowedHeaders": ["*"],
       "ExposeHeaders": ["ETag"],
       "MaxAgeSeconds": 3000

@@ -22,6 +22,7 @@ export default function SignUpRoute() {
   const token = useAppSelector((s) => s.auth.accessToken);
   const me = useAppSelector((s) => s.me.me);
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +33,7 @@ export default function SignUpRoute() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await dispatch(register({ email, username, password }));
+    await dispatch(register({ name, email, username, password }));
   };
 
   return (
@@ -44,6 +45,16 @@ export default function SignUpRoute() {
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={onSubmit}>
+            <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+                required
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -77,7 +88,9 @@ export default function SignUpRoute() {
               />
             </div>
 
-            {error ? <p className="text-sm text-destructive">{error}</p> : null}
+            {error ? (
+              <p className="text-sm text-destructive">{error.message}</p>
+            ) : null}
 
             <Button
               type="submit"

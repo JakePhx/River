@@ -17,18 +17,18 @@ export type User = {
   postCount: number;
   followersCount: number;
   followingCount: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   profile?: {
     id?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: string;
+    updatedAt?: string;
     title?: string;
     company?: string;
     bio?: string;
     gender?: string;
     website?: string;
-    birthDate?: Date;
+    birthDate?: string;
     location?: string;
     avatarUrl?: string;
     coverUrl?: string;

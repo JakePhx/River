@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router";
-import { Home, LogOut, Settings, User, Users, Bell } from "lucide-react";
+import { Home, LogOut, MessageSquare, Settings, User, Users, Bell } from "lucide-react";
 
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -10,6 +10,7 @@ import { clearMe } from "../../features/me/me.slice";
 import { clearEntities } from "../../features/user/user.slice";
 import { clearFeed } from "../../features/post/post.slice";
 import { clearRelations } from "../../features/relation/relation.slice";
+import { clearNotifications } from "../../features/notification/notification.slice";
 
 function initials(name: string, username: string) {
   const display = name || username;
@@ -27,6 +28,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
   const token = useAppSelector((s) => s.auth.accessToken);
   const me = useAppSelector((s) => s.me.me);
+  const unreadNotificationCount = useAppSelector(
+    (s) => s.notifications.items.filter((n) => !n.isRead).length
+  );
+  const chatUnreadTotal = useAppSelector((s) => s.chat.unread?.total ?? 0);
 
   const onLogout = () => {
     dispatch(logout());
@@ -34,6 +39,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     dispatch(clearEntities());
     dispatch(clearFeed());
     dispatch(clearRelations());
+    dispatch(clearNotifications());
     navigate("/sign-in");
   };
 
@@ -43,7 +49,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-dvh bg-background relative flex flex-col">
-      <header className="sticky top-0 border-b bg-background/80 backdrop-blur z-100">
+      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2 font-semibold">
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
@@ -80,14 +86,45 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <Users />
                 </Link>
                 <Link
+                  to="/messages"
+                  className={cn(
+                    "relative inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-accent",
+                    location.pathname.startsWith("/messages") && "bg-accent",
+                  )}
+                  aria-label={
+                    chatUnreadTotal
+                      ? `Messages, ${chatUnreadTotal} unread`
+                      : "Messages"
+                  }
+                >
+                  <MessageSquare />
+                  {chatUnreadTotal > 0 ? (
+                    <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-medium text-destructive-foreground">
+                      {chatUnreadTotal > 99 ? "99+" : chatUnreadTotal}
+                    </span>
+                  ) : null}
+                </Link>
+                <Link
                   to="/notification"
                   className={cn(
-                    "inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-accent",
+                    "relative inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-accent",
                     location.pathname.startsWith("/notification") &&
                       "bg-accent",
                   )}
+                  aria-label={
+                    unreadNotificationCount
+                      ? `Notifications, ${unreadNotificationCount} unread`
+                      : "Notifications"
+                  }
                 >
                   <Bell />
+                  {unreadNotificationCount > 0 ? (
+                    <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-medium text-destructive-foreground">
+                      {unreadNotificationCount > 99
+                        ? "99+"
+                        : unreadNotificationCount}
+                    </span>
+                  ) : null}
                 </Link>
                 <Link
                   to={`/u/${me.username}`}

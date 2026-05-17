@@ -3,6 +3,8 @@ import { PrismaModule } from '@/_shared/infra/prisma/prisma.module';
 import { UserModule } from '../user/user.module';
 import { BlockModule } from '../block/block.module';
 import { TOKENS } from '@/_shared/application/tokens';
+import { KafkaModule } from '@/_shared/infra/kakfa/kafka.module';
+import { KafkaFollowEventPublisher } from './infra/kafka/kafka-follow-event.publisher';
 
 // Controllers
 import { FollowController } from './interface/follow.controller';
@@ -22,7 +24,12 @@ import { PrismaFollowRepo } from './infra/persistence/prisma/prisma-follow.repo'
 import { PrismaFollowRequestRepo } from './infra/persistence/prisma/prisma-follow-request.repo';
 
 @Module({
-  imports: [PrismaModule, forwardRef(() => UserModule), BlockModule],
+  imports: [
+    PrismaModule,
+    forwardRef(() => UserModule),
+    BlockModule,
+    KafkaModule,
+  ],
   controllers: [FollowController],
   providers: [
     // Use cases
@@ -38,6 +45,7 @@ import { PrismaFollowRequestRepo } from './infra/persistence/prisma/prisma-follo
     // Repositories
     { provide: TOKENS.FOLLOW_REPO, useClass: PrismaFollowRepo },
     { provide: TOKENS.FOLLOW_REQUEST_REPO, useClass: PrismaFollowRequestRepo },
+    { provide: TOKENS.FOLLOW_EVENT_PUBLISHER, useClass: KafkaFollowEventPublisher },
   ],
   exports: [
     FollowUserUseCase,
@@ -48,6 +56,7 @@ import { PrismaFollowRequestRepo } from './infra/persistence/prisma/prisma-follo
     ListFollowersUseCase,
     ListFollowingUseCase,
     GetRelationUseCase,
+    TOKENS.FOLLOW_REPO,
   ],
 })
 export class FollowModule {}

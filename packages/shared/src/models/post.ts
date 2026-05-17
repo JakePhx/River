@@ -3,6 +3,12 @@ import type { PostId, UserId } from './common';
 // DTO (request body - used only at controller layer)
 export type CreatePostDto = {
   content: string;
+  attachments?: Array<{
+    url: string;
+    contentType: string;
+    byteSize: number;
+    kind: 'image' | 'video';
+  }>;
 };
 
 // Response (API output)

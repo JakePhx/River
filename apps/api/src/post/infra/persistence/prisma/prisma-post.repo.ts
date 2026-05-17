@@ -7,12 +7,31 @@ import {
   PrismaUser,
   UserPrismaMapper,
 } from '@/user/infra/persistence/prisma/mappers/user.prisma-mapper';
+import { mapPrismaAttachments } from './mappers/post-attachment.prisma-mapper';
+import { postWithAuthorAndAttachments } from './post.include';
 
 @Injectable()
 export class PrismaPostRepo implements PostRepoPort {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(post: PostEntity): Promise<void> {
+  async findById(postId: string): Promise<PostEntity | null> {
+    const row = await this.prisma.post.findUnique({
+      where: { id: postId },
+      include: postWithAuthorAndAttachments,
+    });
+    if (!row) return null;
+    return PostEntity.rehydrate({
+      id: row.id,
+      authorId: row.authorId,
+      content: row.content,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+      attachments: mapPrismaAttachments(row.attachments),
+      author: UserPrismaMapper.toDomain(row.author as unknown as PrismaUser),
+    });
+  }
+
+  async create(post: PostEntity): Promise<PostEntity> {
     await this.prisma.$transaction(async (tx) => {
       await tx.post.create({
         data: {
@@ -23,11 +42,29 @@ export class PrismaPostRepo implements PostRepoPort {
           updatedAt: post.updatedAt,
         },
       });
+      if (post.attachments.length > 0) {
+        await tx.postAttachment.createMany({
+          data: post.attachments.map((a, i) => ({
+            postId: post.id.toString(),
+            url: a.url,
+            contentType: a.contentType,
+            byteSize: a.byteSize,
+            kind: a.kind,
+            position: i,
+          })),
+        });
+      }
       await tx.user.update({
         where: { id: post.authorId.toString() },
         data: { postCount: { increment: 1 } },
       });
     });
+
+    const saved = await this.findById(post.id.toString());
+    if (!saved) {
+      throw new Error('Post was created but could not be reloaded');
+    }
+    return saved;
   }
 
   async feed(userId: UserId, pagination?: { cursor?: string; take?: number }) {
@@ -46,13 +83,7 @@ export class PrismaPostRepo implements PostRepoPort {
       take: takeWithExtra,
       cursor: cursor ? { id: cursor } : undefined,
       skip: cursor ? 1 : 0,
-      include: {
-        author: {
-          include: {
-            profile: true,
-          },
-        },
-      },
+      include: postWithAuthorAndAttachments,
       orderBy: { createdAt: 'desc' },
     });
 
@@ -74,6 +105,7 @@ export class PrismaPostRepo implements PostRepoPort {
           content: p.content,
           createdAt: p.createdAt,
           updatedAt: p.updatedAt,
+          attachments: mapPrismaAttachments(p.attachments),
           author: UserPrismaMapper.toDomain(p.author as unknown as PrismaUser),
         }),
       ),
@@ -93,13 +125,7 @@ export class PrismaPostRepo implements PostRepoPort {
       take: takeWithExtra,
       cursor: cursor ? { id: cursor } : undefined,
       skip: cursor ? 1 : 0,
-      include: {
-        author: {
-          include: {
-            profile: true,
-          },
-        },
-      },
+      include: postWithAuthorAndAttachments,
       orderBy: { createdAt: 'desc' },
     });
 
@@ -118,10 +144,33 @@ export class PrismaPostRepo implements PostRepoPort {
           content: p.content,
           createdAt: p.createdAt,
           updatedAt: p.updatedAt,
+          attachments: mapPrismaAttachments(p.attachments),
           author: UserPrismaMapper.toDomain(p.author as unknown as PrismaUser),
         }),
       ),
       nextCursor,
     };
+  }
+
+  async update(post: PostEntity): Promise<void> {
+    await this.prisma.post.update({
+      where: { id: post.id.toString() },
+      data: {
+        content: post.content,
+        updatedAt: post.updatedAt,
+      },
+    });
+  }
+
+  async deleteById(postId: string): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      const row = await tx.post.findUnique({ where: { id: postId } });
+      if (!row) return;
+      await tx.post.delete({ where: { id: postId } });
+      await tx.user.update({
+        where: { id: row.authorId },
+        data: { postCount: { decrement: 1 } },
+      });
+    });
   }
 }

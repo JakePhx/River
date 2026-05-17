@@ -5,6 +5,7 @@ import { TOKENS } from '@/_shared/application/tokens';
 import type { FollowRepoPort } from '../ports/follow.repo.port';
 import type { FollowRequestRepoPort } from '../ports/follow-request.repo.port';
 import type { UserRepoPort } from '@/user/application/port/user.repo.port';
+import type { FollowEventPublisherPort } from '@/follow/application/port/follow-event.publisher.port';
 
 // Errors
 import { UserNotFoundError } from '@/user/domain/errors';
@@ -29,6 +30,8 @@ export class FollowUserUseCase {
     private readonly followRequestRepo: FollowRequestRepoPort,
     @Inject(TOKENS.USER_REPO)
     private readonly userRepo: UserRepoPort,
+    @Inject(TOKENS.FOLLOW_EVENT_PUBLISHER)
+    private readonly followEventPublisher: FollowEventPublisherPort,
   ) {}
 
   async execute(
@@ -72,6 +75,11 @@ export class FollowUserUseCase {
         followingId: targetId,
       });
       await this.followRepo.create(follow);
+      await this.followEventPublisher.publishFollowReceived({
+        followeeId: targetId.toString(),
+        followerId: followerId.toString(),
+        redirectURL: `/u/${encodeURIComponent(follower.username.toString())}`,
+      });
       return { ok: true, status: FollowTargetStatus.FOLLOWING };
     }
   }

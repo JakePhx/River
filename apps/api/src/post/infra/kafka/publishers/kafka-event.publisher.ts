@@ -4,9 +4,14 @@ import { randomUUID } from 'crypto';
 import { firstValueFrom } from 'rxjs';
 import { TOKENS } from '@/_shared/application/tokens';
 
-import { EVENT_TYPE, PostCreatedEventPayload } from '@/_shared/domain/events';
+import {
+  EVENT_TYPE,
+  PostCommentedEventPayload,
+  PostCreatedEventPayload,
+} from '@/_shared/domain/events';
 
 import { PostEventPublisherPort } from '@/post/application/port/event.publisher.port';
+import { PostCommentedDomainEvent } from '@/notification/domain/post-commented.domain-event';
 import { PostCreatedDomainEvent } from '@/notification/domain/post-created.domain-event';
 
 @Injectable()
@@ -26,5 +31,19 @@ export class KafkaPostEventPublisher implements PostEventPublisherPort {
       payload,
     };
     await firstValueFrom(this.kafkaClient.emit(EVENT_TYPE.POST_CREATED, event));
+  }
+
+  async publishPostCommentedEvent(
+    payload: PostCommentedEventPayload,
+  ): Promise<void> {
+    const event: PostCommentedDomainEvent = {
+      eventId: randomUUID(),
+      type: EVENT_TYPE.POST_COMMENTED,
+      occurredAt: new Date(),
+      payload,
+    };
+    await firstValueFrom(
+      this.kafkaClient.emit(EVENT_TYPE.POST_COMMENTED, event),
+    );
   }
 }

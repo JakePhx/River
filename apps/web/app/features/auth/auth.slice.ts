@@ -21,13 +21,19 @@ import type {
 
 type AuthState = {
   accessToken: string | null;
+  /**
+   * `false` until the client runs `hydrateFromStorage` (reads `localStorage`).
+   * Must stay false on the server so SSR markup matches the first client paint.
+   */
+  hasHydratedFromStorage: boolean;
   user: User | null;
   status: "idle" | "loading" | "failed";
   error: AuthError | null;
 };
 
 const initialState: AuthState = {
-  accessToken: getAccessToken(),
+  accessToken: null,
+  hasHydratedFromStorage: false,
   user: null,
   status: "idle",
   error: null,
@@ -79,6 +85,10 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    hydrateFromStorage(state) {
+      state.accessToken = getAccessToken();
+      state.hasHydratedFromStorage = true;
+    },
     logout(state) {
       state.accessToken = null;
       state.user = null;
@@ -100,6 +110,7 @@ const authSlice = createSlice({
         state.status = "idle";
         state.user = action.payload.user;
         state.accessToken = action.payload.accessToken;
+        state.hasHydratedFromStorage = true;
         setAccessToken(action.payload.accessToken);
       })
       .addCase(login.rejected, (state, action) => {
@@ -117,6 +128,7 @@ const authSlice = createSlice({
         state.status = "idle";
         state.user = action.payload.user;
         state.accessToken = action.payload.accessToken;
+        state.hasHydratedFromStorage = true;
         setAccessToken(action.payload.accessToken);
       })
       .addCase(register.rejected, (state, action) => {
@@ -129,5 +141,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, setUser } = authSlice.actions;
+export const { hydrateFromStorage, logout, setUser } = authSlice.actions;
 export default authSlice.reducer;
